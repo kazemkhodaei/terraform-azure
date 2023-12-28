@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Forcast.Weather/.vs
+/Forcast.Weather/Forcast.Weather/bin/Debug/net8.0
+/Forcast.Weather/Forcast.Weather/obj
+/Forcast.Weather/Forcast.Weather.Tests/bin/Debug/net8.0
+/Forcast.Weather/Forcast.Weather.Tests/obj
