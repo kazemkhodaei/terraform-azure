@@ -69,11 +69,11 @@ jobs:
         run: tree
                           
       - name: restore
-        run: dotnet restore              
+        run: dotnet restore  .\Forcast.Weather\Forcast.Weather            
 
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build .\Forcast.Weather\Forcast.Weather --configuration Release
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
