@@ -64,9 +64,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+
       - name: Build with dotnet
-        run: dotnet build --configuration Release
-      
+        run: tree
+                          
+      - name: restore
+        run: dotnet restore              
+
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
