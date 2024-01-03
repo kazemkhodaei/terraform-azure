@@ -69,7 +69,7 @@ jobs:
         run: tree
                           
       - name: restore
-        run: dotnet restore  .\Forcast.Weather\Forcast.Weather            
+        run: dotnet restore  /Forcast.Weather/Forcast.Weather            
 
 
       - name: Build with dotnet
