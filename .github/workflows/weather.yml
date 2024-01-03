@@ -101,6 +101,18 @@ jobs:
         with:
           name: .net-app
 
+                
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "d540cb03-fbc9-4071-b901-daa963e21ea2",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
