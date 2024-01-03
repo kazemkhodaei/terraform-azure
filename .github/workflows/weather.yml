@@ -33,6 +33,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Forcast.Weather/Forcast.Weather
 
     steps:
       - uses: actions/checkout@v3
@@ -65,15 +68,15 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: restore
-        run: dotnet restore  ./Forcast.Weather/Forcast.Weather            
+        run: dotnet restore         
 
 
       - name: Build with dotnet
-        run: dotnet build ./Forcast.Weather/Forcast.Weather  --configuration Release
+        run: dotnet build  --configuration Release
 
       - name: Build with dotnet
         run: tree
-        
+
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
