@@ -8,3 +8,5 @@
 /Forcast.Weather/Forcast.Weather/obj
 /Forcast.Weather/Forcast.Weather.Tests/bin/Debug/net8.0
 /Forcast.Weather/Forcast.Weather.Tests/obj
+/Infra/.terraform
+/Infra/terraform.tfstate.backup

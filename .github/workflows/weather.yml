@@ -20,7 +20,7 @@
 name: Weather
 
 env:
-  AZURE_WEBAPP_NAME: your-app-name    # set this to the name of your Azure Web App
+  AZURE_WEBAPP_NAME: weather-resource    # set this to the name of your Azure Web App
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.x'                 # set this to the .NET Core version to use
 
@@ -33,9 +33,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./Forcast.Weather/Forcast.Weather
 
     steps:
       - uses: actions/checkout@v3
@@ -59,6 +56,22 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+    # Initialize and apply Terraform
+      - name: Terraform Apply
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: "d540cb03-fbc9-4071-b901-daa963e21ea2"
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+        run: |
+          terraform init
+          terraform apply -auto-approve
+        working-directory: ./Infra # Update with the path to your Terraform files
+    
+
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
         with:
@@ -68,17 +81,20 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: restore
-        run: dotnet restore         
+        run: dotnet restore 
+        working-directory: ./Forcast.Weather/Forcast.Weather       
 
 
       - name: Build with dotnet
         run: dotnet build  --configuration Release
+        working-directory: ./Forcast.Weather/Forcast.Weather
 
       - name: Build with dotnet
         run: tree
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        working-directory: ./Forcast.Weather/Forcast.Weather
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
