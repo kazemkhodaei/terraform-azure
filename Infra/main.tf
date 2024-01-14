@@ -19,6 +19,35 @@ resource "azurerm_storage_account" "storage_account" {
 }
 
 
+resource "azurerm_app_service_plan" "weather" {
+  name                = "weather-appserviceplan"
+  location            = azurerm_resource_group.terraformResource.location
+  resource_group_name = azurerm_resource_group.terraformResource.name
+
+  sku {
+    tier = "Standard"
+    size = "S1"
+  }
+}
+
+resource "azurerm_app_service" "weater_app_service" {
+  name                = "weather-app-service"
+  location            = azurerm_resource_group.terraformResource.location
+  resource_group_name = azurerm_resource_group.terraformResource.name
+  app_service_plan_id = azurerm_app_service_plan.weather.id
+
+    app_settings = {
+    "SOME_KEY" = "some-value"
+  }
+
+  connection_string {
+    name  = "Database"
+    type  = "SQLServer"
+    value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
+  }
+}
+
+
 output "storage_account_connection_string" {
   value = azurerm_storage_account.storage_account.primary_connection_string
   sensitive = true
