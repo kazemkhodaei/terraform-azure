@@ -31,7 +31,7 @@ resource "azurerm_app_service_plan" "weather" {
 }
 
 resource "azurerm_app_service" "weater_app_service" {
-  name                = "weather-app-service"
+  name                = "kz-weather-app-service"
   location            = azurerm_resource_group.terraformResource.location
   resource_group_name = azurerm_resource_group.terraformResource.name
   app_service_plan_id = azurerm_app_service_plan.weather.id
