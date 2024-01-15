@@ -18,6 +18,26 @@ resource "azurerm_storage_account" "storage_account" {
 
 }
 
+resource "azurerm_mssql_server" "sqlServer" {
+  name = "kazem-sql-server"
+  version = "12.0"
+  location = azurerm_resource_group.terraformResource.location
+  administrator_login = "kazemAdmin"
+  administrator_login_password = "5GBDT%6eqq2te"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_mssql_database" "weather_database" {
+  name                = "weatherDatabase"
+  server_id = azurerm_mssql_server.sqlServer.id
+
+  tags = {
+    environment = "test"
+  }
+}
+
+
+
 
 resource "azurerm_app_service_plan" "weather" {
   name                = "weather-appserviceplan"
@@ -41,9 +61,15 @@ resource "azurerm_app_service" "weater_app_service" {
   }
 
   connection_string {
+    name  = "AzureStorageAccount"
+    type  = "Custom"
+    value = azurerm_storage_account.storage_account.primary_connection_string
+  }
+
+  connection_string {
     name  = "Database"
     type  = "SQLServer"
-    value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
+    value = "Server=tcp:${azurerm_mssql_server.sqlServer.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.weather_database.name};Persist Security Info=False;User ID=${azurerm_mssql_server.sqlServer.administrator_login};Password=${azurerm_mssql_server.sqlServer.administrator_login_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   }
 }
 
