@@ -44,7 +44,7 @@ resource "azurerm_service_plan" "weather" {
   location            = azurerm_resource_group.terraformResource.location
   resource_group_name = azurerm_resource_group.terraformResource.name
   sku_name            = "F1"
-  os_type             = "Linux"
+  os_type             = "Windows"
 }
 
 resource "azurerm_app_service" "weater_app_service" {
