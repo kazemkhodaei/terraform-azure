@@ -105,9 +105,17 @@ resource "azurerm_subnet" "weather_subnet" {
   }
 }
 
+
 resource "azurerm_app_service_virtual_network_swift_connection" "weather_swift_connection" {
   app_service_id = azurerm_app_service.weater_app_service.id
   subnet_id      = azurerm_subnet.weather_subnet.id
+}
+
+resource "azurerm_sql_virtual_network_rule" "weather_sql_vnet_rule" {
+  name                = "weather_sql_vnet_rule"
+  resource_group_name = azurerm_resource_group.terraformResource.id
+  server_name         = azurerm_mssql_server.sqlServer.name
+  subnet_id           = azurerm_subnet.weather_subnet.id
 }
 
 output "storage_account_connection_string" {
