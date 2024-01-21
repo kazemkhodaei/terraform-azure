@@ -78,6 +78,7 @@ resource "azurerm_mssql_firewall_rule" "database_firewall" {
   server_id        = azurerm_mssql_server.sqlServer.id
   start_ip_address = each.value
   end_ip_address   = each.value
+  depends_on = [ azurerm_mssql_server.sqlServer ]
 }
 
 
