@@ -73,11 +73,13 @@ resource "azurerm_app_service" "weater_app_service" {
 
 
 resource "azurerm_mssql_firewall_rule" "database_firewall" {
-  name             = "weatherAccessToDatabase"
+  for_each =  toset(azurerm_app_service.weater_app_service.possible_outbound_ip_address_list)
+  name             = "weatherAccessToDatabase${each.value}"
   server_id        = azurerm_mssql_server.sqlServer.id
-  start_ip_address = azurerm_app_service.weater_app_service.outbound_ip_addresses
-  end_ip_address   = azurerm_app_service.weater_app_service.outbound_ip_addresses
+  start_ip_address = each.value
+  end_ip_address   = each.value
 }
+
 
 output "storage_account_connection_string" {
   value     = azurerm_storage_account.storage_account.primary_connection_string
