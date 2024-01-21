@@ -67,12 +67,19 @@ resource "azurerm_app_service" "weater_app_service" {
   }
 
   connection_string {
-    name  = "Database"
+    name  = "SqlDatabase"
     type  = "SQLServer"
     value = "Server=tcp:${azurerm_mssql_server.sqlServer.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.weather_database.name};Persist Security Info=False;User ID=${azurerm_mssql_server.sqlServer.administrator_login};Password=${azurerm_mssql_server.sqlServer.administrator_login_password};MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;"
   }
 }
 
+
+resource "azurerm_mssql_firewall_rule" "database_firewall" {
+   name             = "weatherAccessToDatabase"
+  server_id        = azurerm_mssql_server.sqlServer.id
+  start_ip_address = azurerm_app_service.weater_app_service.outbound_ip_addresses 
+  end_ip_address   = azurerm_app_service.weater_app_service.outbound_ip_addresses
+}
 
 output "storage_account_connection_string" {
   value = azurerm_storage_account.storage_account.primary_connection_string
