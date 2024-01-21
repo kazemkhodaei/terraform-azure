@@ -95,6 +95,14 @@ resource "azurerm_subnet" "weather_subnet" {
   virtual_network_name = azurerm_virtual_network.weather_vnet.name
   address_prefixes     = ["10.0.1.0/24"]
   service_endpoints    = ["Microsoft.Sql"]
+
+  delegation {
+    name = "delegation"
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "weather_swift_connection" {
