@@ -113,7 +113,7 @@ resource "azurerm_app_service_virtual_network_swift_connection" "weather_swift_c
 
 resource "azurerm_sql_virtual_network_rule" "weather_sql_vnet_rule" {
   name                = "weather_sql_vnet_rule"
-  resource_group_name = azurerm_resource_group.terraformResource.id
+  resource_group_name = azurerm_resource_group.terraformResource.name
   server_name         = azurerm_mssql_server.sqlServer.name
   subnet_id           = azurerm_subnet.weather_subnet.id
 }
