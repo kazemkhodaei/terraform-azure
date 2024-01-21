@@ -19,16 +19,16 @@ resource "azurerm_storage_account" "storage_account" {
 }
 
 resource "azurerm_mssql_server" "sqlServer" {
-  name = "kazem-sql-server"
-  version = "12.0"
-  location = azurerm_resource_group.terraformResource.location
-  administrator_login = "kazemAdmin"
+  name                         = "kazem-sql-server"
+  version                      = "12.0"
+  location                     = azurerm_resource_group.terraformResource.location
+  administrator_login          = "kazemAdmin"
   administrator_login_password = "5GBDT%6eqq2te"
-  resource_group_name = var.resource_group_name
+  resource_group_name          = var.resource_group_name
 }
 
 resource "azurerm_mssql_database" "weather_database" {
-  name                = "weatherDatabase"
+  name      = "weatherDatabase"
   server_id = azurerm_mssql_server.sqlServer.id
 
   tags = {
@@ -39,26 +39,24 @@ resource "azurerm_mssql_database" "weather_database" {
 
 
 
-resource "azurerm_app_service_plan" "weather" {
+resource "azurerm_service_plan" "weather" {
   name                = "weather-appserviceplan"
   location            = azurerm_resource_group.terraformResource.location
   resource_group_name = azurerm_resource_group.terraformResource.name
-
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
+  sku_name            = "F1"
+  os_type             = "Linux"
 }
 
 resource "azurerm_app_service" "weater_app_service" {
   name                = "kz-weather-app-service"
   location            = azurerm_resource_group.terraformResource.location
   resource_group_name = azurerm_resource_group.terraformResource.name
-  app_service_plan_id = azurerm_app_service_plan.weather.id
+  app_service_plan_id = azurerm_service_plan.weather.id
 
-    app_settings = {
+  app_settings = {
     "SOME_KEY" = "some-value"
   }
+  depends_on = [azurerm_service_plan.weather]
 
   connection_string {
     name  = "AzureStorageAccount"
@@ -75,13 +73,13 @@ resource "azurerm_app_service" "weater_app_service" {
 
 
 resource "azurerm_mssql_firewall_rule" "database_firewall" {
-   name             = "weatherAccessToDatabase"
+  name             = "weatherAccessToDatabase"
   server_id        = azurerm_mssql_server.sqlServer.id
-  start_ip_address = azurerm_app_service.weater_app_service.outbound_ip_addresses 
+  start_ip_address = azurerm_app_service.weater_app_service.outbound_ip_addresses
   end_ip_address   = azurerm_app_service.weater_app_service.outbound_ip_addresses
 }
 
 output "storage_account_connection_string" {
-  value = azurerm_storage_account.storage_account.primary_connection_string
+  value     = azurerm_storage_account.storage_account.primary_connection_string
   sensitive = true
 }
