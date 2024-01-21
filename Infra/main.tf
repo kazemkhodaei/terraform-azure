@@ -71,16 +71,36 @@ resource "azurerm_app_service" "weater_app_service" {
   }
 }
 
-
-resource "azurerm_mssql_firewall_rule" "database_firewall" {
-  for_each =  toset(azurerm_app_service.weater_app_service.possible_outbound_ip_address_list)
-  name             = "weatherAccessToDatabase${each.value}"
-  server_id        = azurerm_mssql_server.sqlServer.id
-  start_ip_address = each.value
-  end_ip_address   = each.value
-  depends_on = [ azurerm_mssql_server.sqlServer ]
+resource "azurerm_virtual_network" "weather_vnet" {
+  name                = "weather_vnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.terraformResource.location
+  resource_group_name = var.resource_group_name
 }
 
+
+
+# resource "azurerm_mssql_firewall_rule" "database_firewall" {
+#   for_each =  toset(azurerm_app_service.weater_app_service.possible_outbound_ip_address_list)
+#   name             = "weatherAccessToDatabase${each.value}"
+#   server_id        = azurerm_mssql_server.sqlServer.id
+#   start_ip_address = each.value
+#   end_ip_address   = each.value
+#   depends_on = [ azurerm_mssql_server.sqlServer ]
+# }
+
+resource "azurerm_subnet" "weather_subnet" {
+  name                 = "weather_subnet"
+  resource_group_name  = azurerm_resource_group.terraformResource.name
+  virtual_network_name = azurerm_virtual_network.weather_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+  service_endpoints    = ["Microsoft.Sql"]
+}
+
+resource "azurerm_app_service_virtual_network_swift_connection" "weather_swift_connection" {
+  app_service_id = azurerm_app_service.weater_app_service.id
+  subnet_id      = azurerm_subnet.weather_subnet.id
+}
 
 output "storage_account_connection_string" {
   value     = azurerm_storage_account.storage_account.primary_connection_string
