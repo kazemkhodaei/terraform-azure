@@ -30,9 +30,10 @@ resource "azurerm_mssql_server" "sqlServer" {
 resource "azurerm_mssql_database" "weather_database" {
   name      = "weatherDatabase"
   server_id = azurerm_mssql_server.sqlServer.id
-  sku_name = "S0"
+  sku_name = "Basic"
   license_type   = "LicenseIncluded"
   max_size_gb    = 1
+  geo_backup_enabled = "false"
 
   tags = {
     environment = "test"
