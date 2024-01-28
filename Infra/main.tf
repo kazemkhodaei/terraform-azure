@@ -28,11 +28,11 @@ resource "azurerm_mssql_server" "sqlServer" {
 }
 
 resource "azurerm_mssql_database" "weather_database" {
-  name      = "weatherDatabase"
-  server_id = azurerm_mssql_server.sqlServer.id
-  sku_name = "Basic"
-  license_type   = "LicenseIncluded"
-  max_size_gb    = 1
+  name               = "weatherDatabase"
+  server_id          = azurerm_mssql_server.sqlServer.id
+  sku_name           = "Basic"
+  license_type       = "LicenseIncluded"
+  max_size_gb        = 1
   geo_backup_enabled = "false"
 
   tags = {
@@ -41,18 +41,18 @@ resource "azurerm_mssql_database" "weather_database" {
 }
 
 resource "azurerm_application_insights" "kazem_application_insight" {
-  application_type = "web"
+  application_type    = "web"
   resource_group_name = var.resource_group_name
-  name = "kazem-application-insight"
-  location = azurerm_resource_group.terraformResource.location
-  workspace_id = azurerm_log_analytics_workspace.kazem_application_workspace.id
+  name                = "kazem-application-insight"
+  location            = azurerm_resource_group.terraformResource.location
+  workspace_id        = azurerm_log_analytics_workspace.kazem_application_workspace.id
 
 }
 
 resource "azurerm_log_analytics_workspace" "kazem_application_workspace" {
   name                = "workspace-kazem"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.terraformResource.location
+  resource_group_name = var.resource_group_name
   sku                 = "Free"
 }
 
@@ -88,7 +88,7 @@ resource "azurerm_app_service" "weater_app_service" {
     type  = "SQLServer"
     value = "Server=tcp:${azurerm_mssql_server.sqlServer.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.weather_database.name};Persist Security Info=False;User ID=${azurerm_mssql_server.sqlServer.administrator_login};Password=${azurerm_mssql_server.sqlServer.administrator_login_password};MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;"
   }
-  
+
 }
 
 resource "azurerm_virtual_network" "weather_vnet" {
