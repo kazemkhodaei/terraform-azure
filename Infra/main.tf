@@ -40,6 +40,21 @@ resource "azurerm_mssql_database" "weather_database" {
   }
 }
 
+resource "azurerm_application_insights" "kazem_application_insight" {
+  application_type = "web"
+  resource_group_name = var.resource_group_name
+  name = "kazem-application-insight"
+  location = azurerm_resource_group.terraformResource.location
+  workspace_id = azurerm_log_analytics_workspace.kazem_application_workspace.id
+
+}
+
+resource "azurerm_log_analytics_workspace" "kazem_application_workspace" {
+  name                = "workspace-kazem"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  sku                 = "Free"
+}
 
 
 
@@ -58,9 +73,9 @@ resource "azurerm_app_service" "weater_app_service" {
   app_service_plan_id = azurerm_service_plan.weather.id
 
   app_settings = {
-    "SOME_KEY" = "some-value"
+    "ApplicationInsights__ConnectionString" = azurerm_application_insights.kazem_application_insight.connection_string
   }
-  depends_on = [azurerm_service_plan.weather]
+  depends_on = [azurerm_service_plan.weather, azurerm_application_insights.kazem_application_insight]
 
   connection_string {
     name  = "AzureStorageAccount"
@@ -73,6 +88,7 @@ resource "azurerm_app_service" "weater_app_service" {
     type  = "SQLServer"
     value = "Server=tcp:${azurerm_mssql_server.sqlServer.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.weather_database.name};Persist Security Info=False;User ID=${azurerm_mssql_server.sqlServer.administrator_login};Password=${azurerm_mssql_server.sqlServer.administrator_login_password};MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;"
   }
+  
 }
 
 resource "azurerm_virtual_network" "weather_vnet" {
