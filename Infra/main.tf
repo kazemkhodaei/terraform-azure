@@ -53,7 +53,7 @@ resource "azurerm_log_analytics_workspace" "kazem_application_workspace" {
   name                = "workspace-kazem"
   location            = azurerm_resource_group.terraformResource.location
   resource_group_name = var.resource_group_name
-  sku                 = "Free"
+  sku                 = "pay-as-you-go"
 }
 
 
