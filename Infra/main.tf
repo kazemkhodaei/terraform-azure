@@ -45,16 +45,8 @@ resource "azurerm_application_insights" "kazem_application_insight" {
   resource_group_name = var.resource_group_name
   name                = "kazem-application-insight"
   location            = azurerm_resource_group.terraformResource.location
-  workspace_id        = azurerm_log_analytics_workspace.kazem_application_workspace.id
-
 }
 
-resource "azurerm_log_analytics_workspace" "kazem_application_workspace" {
-  name                = "workspace-kazem"
-  location            = azurerm_resource_group.terraformResource.location
-  resource_group_name = var.resource_group_name
-  sku                 = "pay-as-you-go"
-}
 
 
 
