@@ -21,6 +21,9 @@ namespace Forcast.Weather.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogInformation("I am information log");
+            _logger.LogWarning("I am warning log");
+            _logger.LogError("I am error log");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

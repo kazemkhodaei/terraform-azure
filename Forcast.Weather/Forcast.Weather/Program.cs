@@ -15,6 +15,7 @@ builder.Services.AddDbContext<WeatherDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase"));
 });
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
