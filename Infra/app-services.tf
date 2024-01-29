@@ -18,7 +18,7 @@ resource "azurerm_app_service" "weater_app_service" {
   connection_string {
     name  = "SqlDatabase"
     type  = "SQLServer"
-    value = azurerm_mssql_database.weather_database.connection_string
+    value = azurerm_mssql_database.weather_database.primary_connection_string
   }
 
 }
