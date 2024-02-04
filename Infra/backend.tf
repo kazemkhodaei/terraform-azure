@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "tf-state-rg"
     storage_account_name = "kzterraformstate"
     container_name       = "tfstate"
-    access_key           = "u9wAHFaXTCImz7EskShDae6LWV5ExvOCcHw+W4zAyKAkzRxQ4A5QmxNgl6KiEx5Ev7VIAg4SBmTU+AStGx1IbA=="
+    access_key           = "ZHGaR/dNcP/Y9AbUgTWPNx8HwqAWcjoXjfDt5qGQXjqfKeTH8wuKdjxncElQrd2Beus4uqO0Df7i+AStbLjnPQ=="
     key                  = "terraform.tfstate"
   }
 }
