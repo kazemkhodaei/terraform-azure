@@ -1,4 +1,6 @@
+using Azure.Identity;
 using Forcast.Weather.Infra.DB;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using System.Diagnostics.Metrics;
@@ -11,9 +13,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var connectionString = GetConnectionString(builder);
+
+
 builder.Services.AddDbContext<WeatherDbContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase"));
+    option.UseSqlServer(connectionString);
 });
 builder.Services.AddApplicationInsightsTelemetry();
 
@@ -37,3 +42,22 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+string GetConnectionString(WebApplicationBuilder builder)
+{
+    var connectionString = builder.Configuration.GetConnectionString("SqlDatabase")!;
+    if (builder.Environment.IsDevelopment())
+        return builder.Configuration.GetConnectionString("SqlDatabase")!;
+    builder.Services.AddTransient(a =>
+    {
+        var sqlconnection = new SqlConnection(connectionString);
+        var credential = new DefaultAzureCredential();
+        var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://databases.window.net/.default" }));
+        sqlconnection.AccessToken = token.Token;
+        return sqlconnection;
+    });
+
+
+    return connectionString;
+}
