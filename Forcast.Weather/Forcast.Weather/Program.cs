@@ -47,14 +47,15 @@ app.Run();
 string GetConnectionString(WebApplicationBuilder builder)
 {
     var connectionString = builder.Configuration.GetConnectionString("SqlDatabase")!;
-    if (builder.Environment.IsDevelopment())
-        return builder.Configuration.GetConnectionString("SqlDatabase")!;
+    //if (builder.Environment.IsDevelopment())
+    //    return builder.Configuration.GetConnectionString("SqlDatabase")!;
     builder.Services.AddTransient(a =>
     {
         var sqlconnection = new SqlConnection(connectionString);
         var credential = new DefaultAzureCredential();
         var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://databases.window.net/.default" }));
         sqlconnection.AccessToken = token.Token;
+        Console.WriteLine(sqlconnection.AccessToken);
         return sqlconnection;
     });
 
