@@ -1,9 +1,12 @@
+using Azure.Core;
 using Azure.Identity;
 using Forcast.Weather.Infra.DB;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using System.Diagnostics.Metrics;
+using System.Threading;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,7 +15,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-var connectionString = GetConnectionString(builder)!;
+var connectionString = await GetConnectionStringAsync(builder)!;
 
 
 builder.Services.AddDbContext<WeatherDbContext>(option =>
@@ -43,13 +46,14 @@ app.MapControllers();
 app.Run();
 
 
-SqlConnection GetConnectionString(WebApplicationBuilder builder)
+async Task<SqlConnection> GetConnectionStringAsync(WebApplicationBuilder builder)
 {
     var connectionString = builder.Configuration.GetConnectionString("SqlDatabase")!;
     var sqlconnection = new SqlConnection(connectionString);
+    
     var credential = new DefaultAzureCredential();
-
-    var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/" }));
+    var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net/.default" });
+    var token = await credential.GetTokenAsync(tokenRequestContext);
     sqlconnection.AccessToken = token.Token;
     return sqlconnection;
 
