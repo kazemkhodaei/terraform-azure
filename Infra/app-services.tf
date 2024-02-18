@@ -6,6 +6,7 @@ resource "azurerm_app_service" "weater_app_service" {
 
   app_settings = {
     "ApplicationInsights__ConnectionString" = azurerm_application_insights.kazem_application_insight.connection_string
+    "AzureAd__UserAssigendClientId"         = "1a2089ef-bbc3-4c1b-abd5-e34e81dd9f44"
   }
   depends_on = [azurerm_service_plan.weather, azurerm_application_insights.kazem_application_insight]
 
