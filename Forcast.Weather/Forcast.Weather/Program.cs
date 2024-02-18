@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-var connectionString = builder.Configuration.GetConnectionString("SqlDatabase")!;
+var connectionString = GetConnectionString(builder)!;
 
 
 builder.Services.AddDbContext<WeatherDbContext>(option =>
@@ -43,21 +43,14 @@ app.MapControllers();
 app.Run();
 
 
-string GetConnectionString(WebApplicationBuilder builder)
+SqlConnection GetConnectionString(WebApplicationBuilder builder)
 {
     var connectionString = builder.Configuration.GetConnectionString("SqlDatabase")!;
-    //if (builder.Environment.IsDevelopment())
-    //    return builder.Configuration.GetConnectionString("SqlDatabase")!;
-    builder.Services.AddTransient(a =>
-    {
-        var sqlconnection = new SqlConnection(connectionString);
-        var credential = new DefaultAzureCredential();
-        var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://databases.window.net/.default" }));
-        sqlconnection.AccessToken = token.Token;
-        Console.WriteLine(sqlconnection.AccessToken);
-        return sqlconnection;
-    });
+    var sqlconnection = new SqlConnection(connectionString);
+    var credential = new DefaultAzureCredential();
 
+    var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/" }));
+    sqlconnection.AccessToken = token.Token;
+    return sqlconnection;
 
-    return connectionString;
 }
