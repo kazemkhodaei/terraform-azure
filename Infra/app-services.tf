@@ -4,7 +4,7 @@ resource "azurerm_app_service" "weater_app_service" {
   resource_group_name = azurerm_resource_group.terraformResource.name
   app_service_plan_id = azurerm_service_plan.weather.id
   identity {
-    type = UserAssigned
+    type = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.weather_user_assigned_identity.id]
   }
 
