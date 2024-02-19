@@ -27,3 +27,7 @@ resource "azurerm_app_service" "weater_app_service" {
   }
 
 }
+
+//CREATE USER [weather-manage-identity] FROM EXTERNAL PROVIDER;
+
+//ALTER ROLE db_owner ADD MEMBER [weather-manage-identity];
