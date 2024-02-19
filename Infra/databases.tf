@@ -20,3 +20,18 @@ resource "azurerm_mssql_database" "weather_database" {
     environment = "test"
   }
 }
+
+resource "mssql_user" "example" {
+  server {
+    host = azurerm_mssql_server.sqlServer.host
+    azure_login {
+    }
+
+  }
+
+  database  = azurerm_mssql_database.weather_database.name
+  username  = azurerm_user_assigned_identity.weather_user_assigned_identity.name
+  object_id = azurerm_user_assigned_identity.weather_user_assigned_identity.client_id
+
+  roles     = ["db_owner"]
+}
