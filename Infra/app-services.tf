@@ -3,10 +3,14 @@ resource "azurerm_app_service" "weater_app_service" {
   location            = azurerm_resource_group.terraformResource.location
   resource_group_name = azurerm_resource_group.terraformResource.name
   app_service_plan_id = azurerm_service_plan.weather.id
+  identity {
+    type = UserAssigned
+    identity_ids = [azurerm_user_assigned_identity.weather_user_assigned_identity.id]
+  }
 
   app_settings = {
     "ApplicationInsights__ConnectionString" = azurerm_application_insights.kazem_application_insight.connection_string
-    "AzureAd__UserAssigendClientId"         = "1a2089ef-bbc3-4c1b-abd5-e34e81dd9f44"
+    "AzureAd__UserAssigendClientId"         = azurerm_user_assigned_identity.weather_user_assigned_identity.client_id
   }
   depends_on = [azurerm_service_plan.weather, azurerm_application_insights.kazem_application_insight]
 
