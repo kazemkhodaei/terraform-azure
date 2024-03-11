@@ -24,14 +24,14 @@ resource "azurerm_mssql_database" "weather_database" {
 resource "mssql_user" "example" {
   server {
     host = azurerm_mssql_server.sqlServer.fully_qualified_domain_name
-    azuread_managed_identity_auth {
-      
+    azuread_managed_identity_auth  {
+     
     }
   }
 
   database  = azurerm_mssql_database.weather_database.name
   username  = azurerm_user_assigned_identity.weather_user_assigned_identity.name
-
+  object_id = azurerm_user_assigned_identity.weather_user_assigned_identity.client_id
 
   roles     = ["db_owner"]
   depends_on = [azurerm_mssql_database.weather_database]
