@@ -8,7 +8,7 @@ terraform {
   required_providers {
      mssql = {
       source = "betr-io/mssql"
-      version = "0.3.0"
+      version = "0.2.7"
     }
     azurerm={
       source = "hashicorp/azurerm"
