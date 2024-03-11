@@ -25,7 +25,7 @@ resource "mssql_user" "example" {
   server {
     host = azurerm_mssql_server.sqlServer.fully_qualified_domain_name
     azuread_managed_identity_auth  {
-     user_id = azurerm_user_assigned_identity.weather_user_assigned_identity.id
+     user_id = azurerm_user_assigned_identity.weather_user_assigned_identity.name
     }
   }
 
