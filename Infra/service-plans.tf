@@ -5,3 +5,5 @@ resource "azurerm_service_plan" "weather" {
   sku_name            = "B1"
   os_type             = "Windows"
 }
+
+## linux => cheaper , dockerize,

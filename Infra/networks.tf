@@ -34,3 +34,6 @@ resource "azurerm_sql_virtual_network_rule" "weather_sql_vnet_rule" {
   server_name         = azurerm_mssql_server.sqlServer.name
   subnet_id           = azurerm_subnet.weather_subnet.id
 }
+
+## enable private endpoint and disable public access for SqL server 
+## add vpn to access to subnet https://learn.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about

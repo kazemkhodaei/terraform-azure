@@ -31,3 +31,9 @@ resource "azurerm_app_service" "weater_app_service" {
 //CREATE USER [weather-manage-identity] FROM EXTERNAL PROVIDER;
 
 //ALTER ROLE db_owner ADD MEMBER [weather-manage-identity];
+
+# use local tf file for tag  
+# https://developer.hashicorp.com/terraform/language/values/locals 
+# https://github.com/TheSustainables/patterns-and-practices/tree/main/practices/naming-conventions/metrics-and-tags 
+#https://github.com/TheSustainables/patterns-and-practices/blob/main/patterns/infrastructure-as-code/identity.md 
+# use app configuration for business configuration
