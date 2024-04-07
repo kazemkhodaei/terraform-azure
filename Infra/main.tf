@@ -18,6 +18,10 @@ terraform {
   required_version = "~> 1.6.6"
 }
 
+provider "mssql" {
+  # Configuration options
+}
+
 ## mark version that you are working 
 ## if somebody download wrong version it will break 
 ## try to use  >version 
