@@ -27,8 +27,8 @@ resource "azurerm_mssql_database" "weather_database" {
 
 
 resource "azurerm_sql_active_directory_administrator" "githubPrincipal" {
-  server_name         = azurerm_mssql_server.example.name
-  resource_group_name = azurerm_resource_group.example.name
+  server_name         = azurerm_mssql_server.sqlServer.name
+  resource_group_name = var.resource_group_name
   login               = "github service principal"  # GitHub principal display name
   object_id           = "e5da7f7c-f378-4dc3-9959-878678d3bf41"     # GitHub principal Object ID
   tenant_id           = "a45661e0-d859-4a2c-9e22-99793b6060e6"                      # Tenant ID
