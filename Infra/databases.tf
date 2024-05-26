@@ -25,11 +25,17 @@ resource "azurerm_mssql_database" "weather_database" {
 }
 
 
-resource "azurerm_role_assignment" "weather_user_assigned_identity_sql_db_contributor" {
-  principal_id   = azurerm_user_assigned_identity.weather_user_assigned_identity.client_id
-  role_definition_name = "SQL DB Contributor"
-  scope          = azurerm_mssql_server.sqlServer.id
+
+resource "azurerm_mssql_active_directory_administrator" "githubPrincipal" {
+  server_name         = azurerm_mssql_server.example.name
+  resource_group_name = azurerm_resource_group.example.name
+  login               = "github service principal"  # GitHub principal display name
+  object_id           = "e5da7f7c-f378-4dc3-9959-878678d3bf41"     # GitHub principal Object ID
+  tenant_id           = "a45661e0-d859-4a2c-9e22-99793b6060e6"                      # Tenant ID
 }
+
+
+
 
 
 resource "null_resource" "database" { 
@@ -37,7 +43,13 @@ resource "null_resource" "database" {
     command = <<eot
     Set-AzContext -SubscriptionId "d540cb03-fbc9-4071-b901-daa963e21ea2"
     $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token 
-$query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER;'
+
+    $query= @' 
+CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; 
+GO 
+ALTER ROLE [db_owner] ADD MEMBER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}]; 
+GO 
+'@ 
 Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_server.sqlServer.name} -AccessToken $token -Query $query 
      eot
     interpreter = ["PowerShell", "-Command"] 
