@@ -25,23 +25,23 @@ resource "azurerm_mssql_database" "weather_database" {
 }
 
 
-# resource "null_resource" "database" { 
-#   provisioner "local-exec" { 
-#     command = <<eot
-#     Set-AzContext -SubscriptionId "d540cb03-fbc9-4071-b901-daa963e21ea2"
-#     $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token 
-# $query= @' 
-# CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL IDENTITY; 
-# GO 
-# ALTER ROLE [db_owner] ADD MEMBER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}]; 
-# GO 
-# '@ 
-# Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_server.sqlServer.name} -AccessToken $token -Query $query 
-# EOT 
-#     eot
-#     interpreter = ["PowerShell", "-Command"] 
-#   } 
-#   depends_on = [ 
-#     azurerm_mssql_database.weather_database 
-#   ] 
-# }
+resource "null_resource" "database" { 
+  provisioner "local-exec" { 
+    command = <<eot
+    Set-AzContext -SubscriptionId "d540cb03-fbc9-4071-b901-daa963e21ea2"
+    $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token 
+$query= @' 
+CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL IDENTITY; 
+GO 
+ALTER ROLE [db_owner] ADD MEMBER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}]; 
+GO 
+'@ 
+Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_server.sqlServer.name} -AccessToken $token -Query $query 
+EOT 
+    eot
+    interpreter = ["PowerShell", "-Command"] 
+  } 
+  depends_on = [ 
+    azurerm_mssql_database.weather_database 
+  ] 
+}
