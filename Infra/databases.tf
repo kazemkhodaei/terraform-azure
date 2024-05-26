@@ -44,12 +44,7 @@ resource "null_resource" "database" {
     Set-AzContext -SubscriptionId "d540cb03-fbc9-4071-b901-daa963e21ea2"
     $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token 
 
-    $query= @' 
-CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; 
-GO 
-ALTER ROLE [db_owner] ADD MEMBER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}]; 
-GO 
-'@ 
+    $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; ' 
 Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_server.sqlServer.name} -AccessToken $token -Query $query 
      eot
     interpreter = ["PowerShell", "-Command"] 
