@@ -41,11 +41,16 @@ jobs:
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-      - name: 'Azure Login'
+      - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "d540cb03-fbc9-4071-b901-daa963e21ea2",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -118,7 +123,13 @@ jobs:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "d540cb03-fbc9-4071-b901-daa963e21ea2",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
           
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
