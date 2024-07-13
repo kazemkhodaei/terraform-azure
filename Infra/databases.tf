@@ -8,6 +8,10 @@ resource "azurerm_mssql_server" "sqlServer" {
   administrator_login          = "kazemAdmin"
   administrator_login_password = "5GBDT%6eqq2te"
   resource_group_name          = var.resource_group_name
+   azuread_administrator {
+    login_username = "github service principal"
+    object_id      = "e5da7f7c-f378-4dc3-9959-878678d3bf41"
+  }
 }
 
 
@@ -25,27 +29,14 @@ resource "azurerm_mssql_database" "weather_database" {
 }
 
 
-
-resource "azurerm_sql_active_directory_administrator" "githubPrincipal" {
-  server_name         = azurerm_mssql_server.sqlServer.name
-  resource_group_name = var.resource_group_name
-  login               = "github service principal"  # GitHub principal display name
-  object_id           = "e5da7f7c-f378-4dc3-9959-878678d3bf41"     # GitHub principal Object ID
-  tenant_id           = "a45661e0-d859-4a2c-9e22-99793b6060e6"                      # Tenant ID
-}
-
-
-
-
-
 resource "null_resource" "database" { 
   provisioner "local-exec" { 
     command = <<eot
-    Set-AzContext -SubscriptionId "d540cb03-fbc9-4071-b901-daa963e21ea2"
-    $token = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token 
+
+      $token = az account get-access-token --resource https://database.windows.net --query accessToken
 
     $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; ' 
-Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_server.sqlServer.name} -AccessToken $token -Query $query 
+Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_database.weather_database.name} -AccessToken $token -Query $query 
      eot
     interpreter = ["PowerShell", "-Command"] 
   } 
