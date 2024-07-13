@@ -32,11 +32,9 @@ resource "azurerm_mssql_database" "weather_database" {
 resource "null_resource" "database" { 
   provisioner "local-exec" { 
     command = <<eot
-
-      $token = az account get-access-token --resource https://database.windows.net --query accessToken
-
-    $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; ' 
-Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_database.weather_database.name} -AccessToken $token -Query $query 
+      $token = az account get-access-token --resource https://database.windows.net --query accessToken -o tsv
+      $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; ' 
+      Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_database.weather_database.name} -AccessToken $token -Query $query 
      eot
     interpreter = ["PowerShell", "-Command"] 
   } 
