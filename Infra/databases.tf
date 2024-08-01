@@ -10,9 +10,18 @@ resource "azurerm_mssql_server" "sqlServer" {
   resource_group_name          = var.resource_group_name
    azuread_administrator {
     login_username = "github service principal"
-    object_id      = "e5da7f7c-f378-4dc3-9959-878678d3bf41"
+    object_id      = "600f8320-c7f9-4059-a238-ff23083b24d1"
   }
 }
+
+
+# resource "azurerm_sql_firewall_rule" "example" {
+#   name                = "FirewallRule1"
+#   resource_group_name = var.resource_group_name
+#   server_name         = azurerm_mssql_server.sqlServer.name
+#   start_ip_address    = "31.201.26.114"
+#   end_ip_address      = "31.201.26.114"
+# }
 
 
 resource "azurerm_mssql_database" "weather_database" {
@@ -33,7 +42,7 @@ resource "null_resource" "database" {
   provisioner "local-exec" { 
     command = <<eot
       $token = az account get-access-token --resource https://database.windows.net --query accessToken -o tsv
-      $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER; ' 
+      $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIERD; ' 
       Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_database.weather_database.name} -AccessToken $token -Query $query 
      eot
     interpreter = ["PowerShell", "-Command"] 
