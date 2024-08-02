@@ -15,13 +15,13 @@ resource "azurerm_mssql_server" "sqlServer" {
 }
 
 
-# resource "azurerm_sql_firewall_rule" "example" {
-#   name                = "FirewallRule1"
-#   resource_group_name = var.resource_group_name
-#   server_name         = azurerm_mssql_server.sqlServer.name
-#   start_ip_address    = "31.201.26.114"
-#   end_ip_address      = "31.201.26.114"
-# }
+resource "azurerm_sql_firewall_rule" "github_action" {
+  name                = "AllowGitHubAction"
+  resource_group_name = var.resource_group_name
+  server_name         = azurerm_mssql_server.sqlServer.name
+  start_ip_address    = var.runner_ip
+  end_ip_address      = var.runner_ip
+}
 
 
 resource "azurerm_mssql_database" "weather_database" {

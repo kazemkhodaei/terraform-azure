@@ -85,9 +85,20 @@ jobs:
           ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
         run: |
           terraform init -upgrade
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var "runner_ip=$RUNNER_IP"
         working-directory: ./Infra # Update with the path to your Terraform files
     
+      - name: Terraform Apply
+        env:
+          ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+          ARM_CLIENT_SECRET: "${{ secrets.AZURE_CLIENT_SECRET }}"
+          ARM_SUBSCRIPTION_ID: "d540cb03-fbc9-4071-b901-daa963e21ea2"
+          ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+        run: |
+          terraform init -upgrade
+          terraform apply -auto-approve -var "runner_ip=0.0.0.0"
+        working-directory: ./Infra # Update with the path to your Terraform files
+
 
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
@@ -144,7 +155,7 @@ jobs:
               "subscriptionId": "d540cb03-fbc9-4071-b901-daa963e21ea2",
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
-          
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
