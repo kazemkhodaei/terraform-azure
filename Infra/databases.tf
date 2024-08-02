@@ -38,16 +38,59 @@ resource "azurerm_mssql_database" "weather_database" {
 }
 
 
-resource "null_resource" "database" { 
-  provisioner "local-exec" { 
-    command = <<eot
-      $token = az account get-access-token --resource https://database.windows.net --query accessToken -o tsv
-      $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIERD; ' 
-      Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_database.weather_database.name} -AccessToken $token -Query $query 
-     eot
-    interpreter = ["PowerShell", "-Command"] 
-  } 
+resource "null_resource" "database" {
+  provisioner "local-exec" {
+    command = <<EOT
+#!/bin/bash
+# Check if PowerShell is installed
+if ! command -v pwsh &> /dev/null
+then
+    echo "PowerShell could not be found, installing..."
+    sudo apt-get update
+    sudo apt-get install -y powershell
+fi
+
+# Ensure PowerShellGet and SqlServer modules are installed
+pwsh -Command "
+if (-not (Get-Module -ListAvailable -Name PowerShellGet)) {
+    Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+    Install-Module -Name PowerShellGet -Force -AllowClobber -Scope CurrentUser
+}
+
+if (-not (Get-Module -ListAvailable -Name SqlServer)) {
+    Install-Module -Name SqlServer -Force -AllowClobber -Scope CurrentUser
+}
+"
+
+# Run the SQL script with the necessary token and query
+pwsh -Command "
+\$token = az account get-access-token --resource https://database.windows.net --query accessToken -o tsv
+  az account show
+\$query= @'
+CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIDER;
+GO
+ALTER ROLE [db_owner] ADD MEMBER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}];
+GO
+'@
+Invoke-SqlCmd -ServerInstance '${azurerm_mssql_server.sqlServer.fully_qualified_domain_name}' -Database '${azurerm_mssql_database.weather_database.name}' -AccessToken \$token -Query \$query
+"
+EOT
+  }
   depends_on = [ 
     azurerm_mssql_database.weather_database 
   ] 
 }
+
+# resource "null_resource" "database" { 
+#   provisioner "local-exec" { 
+#     command = <<eot
+#       $token = az account get-access-token --resource https://database.windows.net --query accessToken -o tsv
+#       $query= 'CREATE USER [${azurerm_user_assigned_identity.weather_user_assigned_identity.name}] FOR EXTERNAL PROVIERD; ' 
+#       Invoke-SqlCmd -ServerInstance ${azurerm_mssql_server.sqlServer.fully_qualified_domain_name} -Database ${azurerm_mssql_database.weather_database.name} -AccessToken $token -Query $query 
+#      eot
+#     interpreter = ["PowerShell", "-Command"] 
+#   } 
+#   depends_on = [ 
+#     azurerm_mssql_database.weather_database 
+#   ] 
+# }
