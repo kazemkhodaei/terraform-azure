@@ -37,6 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get runner IP address
+        id: get_ip
+        run: | 
+          echo "RUNNER_IP=$(curl -s https://api.ipify.org)" >> $GITHUB_ENV
+
+      - name: Print runner IP address
+        run: |
+         echo "Runner IP: $RUNNER_IP"
+
       - name: 'Install Azure CLI'
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
@@ -125,7 +134,6 @@ jobs:
         with:
           name: .net-app
 
-                
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
