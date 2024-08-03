@@ -5,8 +5,8 @@ resource "azurerm_mssql_server" "sqlServer" {
   name                         = "kazem-sql-server"
   version                      = "12.0"
   location                     = azurerm_resource_group.terraformResource.location
-  administrator_login          = "kazemAdmin"
-  administrator_login_password = "5GBDT%6eqq2te"
+  administrator_login          = data.azurerm_key_vault_secret.sql_admin_login 
+  administrator_login_password = data.azurerm_key_vault_secret.sql_admin_password 
   resource_group_name          = var.resource_group_name
    azuread_administrator {
     login_username = "github service principal"
